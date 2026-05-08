@@ -6,10 +6,16 @@ This project implements an automated Student Grade Sync & Notification System.
 
 To test the complete "Happy Path" (REST -> SOAP -> SMTP), follow these exact steps:
 
-### 1. Prerequisites (SMTP Mock)
-Because the middleware sends an email upon successful SOAP storage, you need a dummy SMTP server running locally on port **1025**.
-- **Download [Papercut SMTP](https://github.com/ChangemakerStudios/Papercut-SMTP) (Windows)** or use Docker: `docker run -p 1080:1080 -p 1025:1025 maildev/maildev`
-- Start it. It must listen on `localhost:1025`.
+### 1. Prerequisites (SendGrid Setup)
+The middleware sends real email notifications using **SendGrid**. You must configure your API key securely before running:
+1. Create a free SendGrid account and verify a **Single Sender** email address.
+2. Generate a SendGrid API Key.
+3. Open a terminal in `src/GradeHub.Middleware` and save the key to Windows User Secrets:
+   ```powershell
+   dotnet user-secrets init
+   dotnet user-secrets set "SendGrid:ApiKey" "SG.YOUR_REAL_API_KEY_HERE"
+   ```
+4. Open `src/GradeHub.Middleware/appsettings.Development.json` and change `"SenderEmail"` to match the exact email address you verified in SendGrid.
 
 ### 2. Start CIS Mock (Terminal 1)
 Open a terminal in the root folder and run:
@@ -36,14 +42,15 @@ Open Postman (or use PowerShell) and send a JSON payload to the Middleware:
 - **Body (raw JSON):**
 ```json
 {
-  "studentEmail": "student@technikum-wien.at",
+  "studentEmail": "YOUR_PERSONAL_TEST_EMAIL@gmail.com",
   "courseName": "Systems Integration",
   "gradeValue": "1",
   "professor": "Prof. Smith"
 }
 ```
+*(Note: Use a real email address for `studentEmail` so you can verify receipt!)*
 
 ### 5. Verify the Happy Path
 1. **REST Response:** Postman should return `200 OK` with `{"message": "Grade processed successfully."}`.
 2. **SOAP Success:** Check `src/GradeHub.CIS.Mock/grades.csv`. A new line with your test data should appear.
-3. **SMTP Success:** Check your local SMTP Mock (Papercut/Maildev). You should see a new email with the subject `"Grade recorded for Systems Integration"`.
+3. **SMTP Success:** Check the inbox of the email address you put in `studentEmail`. You should receive a real email from your SendGrid verified sender!
