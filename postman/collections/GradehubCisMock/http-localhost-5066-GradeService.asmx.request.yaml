@@ -1,0 +1,31 @@
+$kind: http-request
+name: http://localhost:5066/GradeService.asmx
+url: http://localhost:5066/GradeService.asmx
+method: POST
+headers:
+  Content-Type: text/xml
+  SOAPAction: '"http://tempuri.org/IGradeService/StoreGrade"'
+body:
+  type: xml
+  content: "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tem=\"http://tempuri.org/\">\r
+
+    \   <soapenv:Header/>\r
+
+    \   <soapenv:Body>\r
+
+    \      <tem:StoreGrade>\r
+
+    \         <tem:studentId>st1234</tem:studentId>\r
+
+    \         <tem:courseId>SYIN</tem:courseId>\r
+
+    \         <tem:grade>3</tem:grade>\r
+
+    \      </tem:StoreGrade>\r
+
+    \   </soapenv:Body>\r
+
+    </soapenv:Envelope>\r\n"
+settings:
+  disabledSystemHeaders: []
+order: 1778271988768

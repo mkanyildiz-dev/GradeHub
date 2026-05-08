@@ -1,0 +1,18 @@
+$kind: http-request
+name: http://localhost:5188/api/grades
+url: http://localhost:5188/api/grades
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"studentEmail\": \"student@technikum-wien.at\",\r
+
+    \  \"courseName\": \"Systems Integration\",\r
+
+    \  \"gradeValue\": \"1\",\r
+
+    \  \"professor\": \"Prof. Smith\"\r
+
+    }"
+order: 1778273143360
