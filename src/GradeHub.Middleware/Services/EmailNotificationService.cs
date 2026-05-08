@@ -9,10 +9,12 @@ public class EmailNotificationService
 {
     private readonly ILogger<EmailNotificationService> _logger;
     private readonly AsyncRetryPolicy _retryPolicy;
+    private readonly IConfiguration _config;
 
-    public EmailNotificationService(ILogger<EmailNotificationService> logger)
+    public EmailNotificationService(ILogger<EmailNotificationService> logger, IConfiguration config)
     {
         _logger = logger;
+        _config = config;
         _retryPolicy = Policy
             .Handle<Exception>()
             .WaitAndRetryAsync(
@@ -26,11 +28,14 @@ public class EmailNotificationService
 
     public async Task SendGradeNotificationAsync(string studentEmail, string courseName, string gradeValue)
     {
+        var apiKey = _config["SendGrid:ApiKey"];
+        var senderEmail = _config["SendGrid:SenderEmail"] ?? "noreply@gradehub.local";
+
         await _retryPolicy.ExecuteAsync(async () =>
         {
             _logger.LogInformation($"Attempting to send email to {studentEmail}...");
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("GradeHub Integration", "noreply@gradehub.local"));
+            message.From.Add(new MailboxAddress("GradeHub Integration", senderEmail));
             message.To.Add(new MailboxAddress("Student", studentEmail));
             message.Subject = $"Grade recorded for {courseName}";
 
@@ -40,8 +45,21 @@ public class EmailNotificationService
             };
 
             using var client = new SmtpClient();
-            // Local SMTP like MailHog or Papercut on port 1025
-            await client.ConnectAsync("localhost", 1025, false); 
+            
+            // Connect to SendGrid SMTP
+            await client.ConnectAsync("smtp.sendgrid.net", 587, MailKit.Security.SecureSocketOptions.StartTls); 
+            
+            // Authenticate with SendGrid if API key is provided
+            if (!string.IsNullOrEmpty(apiKey))
+            {
+                // SendGrid always uses the username "apikey"
+                await client.AuthenticateAsync("apikey", apiKey);
+            }
+            else 
+            {
+                _logger.LogWarning("SendGrid API key is missing from User Secrets.");
+            }
+
             await client.SendAsync(message);
             await client.DisconnectAsync(true);
             
