@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.7" />
+    <PackageReference Include="SoapCore" Version="1.2.1.13" />
   </ItemGroup>
 
 </Project>
