@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GradeHub.CIS.Mock/GradeHub.CIS.Mock.csproj" />
+    <Project Path="src/GradeHub.Middleware/GradeHub.Middleware.csproj" />
+  </Folder>
+</Solution>
