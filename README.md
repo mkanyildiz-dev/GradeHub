@@ -6,16 +6,16 @@ This project implements an automated Student Grade Sync & Notification System.
 
 To test the complete "Happy Path" (REST -> SOAP -> SMTP), follow these exact steps:
 
-### 1. Prerequisites (SendGrid Setup)
-The middleware sends real email notifications using **SendGrid**. You must configure your API key securely before running:
-1. Create a free SendGrid account and verify a **Single Sender** email address.
-2. Generate a SendGrid API Key.
+### 1. Prerequisites (Resend Setup)
+The middleware sends real email notifications using **Resend**. You must configure your API key securely before running:
+1. Create a free Resend account.
+2. Generate a Resend API Key.
 3. Open a terminal in `src/GradeHub.Middleware` and save the key to Windows User Secrets:
    ```powershell
    dotnet user-secrets init
-   dotnet user-secrets set "SendGrid:ApiKey" "SG.YOUR_REAL_API_KEY_HERE"
+   dotnet user-secrets set "Resend:ApiKey" "re_YOUR_REAL_API_KEY_HERE"
    ```
-4. Open `src/GradeHub.Middleware/appsettings.Development.json` and change `"SenderEmail"` to match the exact email address you verified in SendGrid.
+4. By default, `src/GradeHub.Middleware/appsettings.Development.json` uses `"onboarding@resend.dev"`. Note: On the free tier, you can only send emails to the address you used to sign up for Resend.
 
 ### 2. Start CIS Mock (Terminal 1)
 Open a terminal in the root folder and run:
@@ -53,4 +53,4 @@ Open Postman (or use PowerShell) and send a JSON payload to the Middleware:
 ### 5. Verify the Happy Path
 1. **REST Response:** Postman should return `200 OK` with `{"message": "Grade processed successfully."}`.
 2. **SOAP Success:** Check `src/GradeHub.CIS.Mock/grades.csv`. A new line with your test data should appear.
-3. **SMTP Success:** Check the inbox of the email address you put in `studentEmail`. You should receive a real email from your SendGrid verified sender!
+3. **SMTP Success:** Check the inbox of the email address you put in `studentEmail`. You should receive a real email! (Remember: for Resend free tier, this must be your own email).
