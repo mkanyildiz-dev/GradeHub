@@ -4,7 +4,7 @@ using Resend;
 
 namespace GradeHub.Middleware.Services;
 
-public class EmailNotificationService
+public class EmailNotificationService : IEmailNotificationService
 {
     private readonly ILogger<EmailNotificationService> _logger;
     private readonly AsyncRetryPolicy _retryPolicy;

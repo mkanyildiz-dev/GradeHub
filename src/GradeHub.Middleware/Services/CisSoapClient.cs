@@ -4,7 +4,7 @@ using Polly.Retry;
 
 namespace GradeHub.Middleware.Services;
 
-public class CisSoapClient
+public class CisSoapClient : ICisSoapClient
 {
     private readonly ILogger<CisSoapClient> _logger;
     private readonly string _endpointUrl;
