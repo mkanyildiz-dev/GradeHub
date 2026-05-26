@@ -1,0 +1,12 @@
+{
+  "providerId": "Microsoft.Tools.ServiceModel.Svcutil",
+  "version": "8.0.0",
+  "options": {
+    "inputs": [
+      "http://localhost:5066/GradeService.asmx?wsdl"
+    ],
+    "outputFile": "Reference.cs",
+    "targetFramework": "net10.0",
+    "typeReuseMode": "All"
+  }
+}
