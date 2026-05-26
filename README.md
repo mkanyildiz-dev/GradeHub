@@ -6,16 +6,16 @@ This project implements an automated Student Grade Sync & Notification System.
 
 To test the complete "Happy Path" (REST -> SOAP -> SMTP), follow these exact steps:
 
-### 1. Prerequisites (Resend Setup)
-The middleware sends real email notifications using **Resend**. You must configure your API key securely before running:
-1. Create a free Resend account.
-2. Generate a Resend API Key.
-3. Open a terminal in `src/GradeHub.Middleware` and save the key to Windows User Secrets:
+### 1. Prerequisites (Gmail SMTP Setup)
+The middleware sends real email notifications using **Gmail SMTP**. You must configure your credentials securely before running:
+1. Enable 2-Step Verification on your Google Account.
+2. Generate a Google App Password (under Security -> 2-Step Verification -> App passwords).
+3. Open a terminal in `src/GradeHub.Middleware` and save the email and app password to Windows User Secrets:
    ```powershell
    dotnet user-secrets init
-   dotnet user-secrets set "Resend:ApiKey" "re_YOUR_REAL_API_KEY_HERE"
+   dotnet user-secrets set "Gmail:Email" "your-email@gmail.com"
+   dotnet user-secrets set "Gmail:AppPassword" "xxxx xxxx xxxx xxxx"
    ```
-4. By default, `src/GradeHub.Middleware/appsettings.Development.json` uses `"onboarding@resend.dev"`. Note: On the free tier, you can only send emails to the address you used to sign up for Resend.
 
 ### 2. Start CIS Mock (Terminal 1)
 Open a terminal in the root folder and run:
@@ -39,18 +39,20 @@ Open Postman (or use PowerShell) and send a JSON payload to the Middleware:
 - **Method:** `POST`
 - **URL:** `http://localhost:5188/api/grades`
 - **Headers:** `Content-Type: application/json`
-- **Body (raw JSON):**
+- **Body (raw JSON array):**
 ```json
-{
-  "studentEmail": "YOUR_PERSONAL_TEST_EMAIL@gmail.com",
-  "courseName": "Systems Integration",
-  "gradeValue": "1",
-  "professor": "Prof. Smith"
-}
+[
+  {
+    "studentEmail": "YOUR_PERSONAL_TEST_EMAIL@gmail.com",
+    "courseName": "Systems Integration",
+    "gradeValue": "1",
+    "professor": "Prof. Smith"
+  }
+]
 ```
 *(Note: Use a real email address for `studentEmail` so you can verify receipt!)*
 
 ### 5. Verify the Happy Path
 1. **REST Response:** Postman should return `200 OK` with `{"message": "Grade processed successfully."}`.
 2. **SOAP Success:** Check `src/GradeHub.CIS.Mock/grades.csv`. A new line with your test data should appear.
-3. **SMTP Success:** Check the inbox of the email address you put in `studentEmail`. You should receive a real email! (Remember: for Resend free tier, this must be your own email).
+3. **SMTP Success:** Check the inbox of the email address you put in `studentEmail`. You should receive a real email!

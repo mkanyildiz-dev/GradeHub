@@ -6,6 +6,7 @@ namespace GradeHub.Middleware.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Route("api/grades")]
 public class GradeController : ControllerBase
 {
     private readonly IGradeProcessingService _processingService;
@@ -18,25 +19,42 @@ public class GradeController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> SubmitGrade([FromBody] GradeSubmission submission)
+    public async Task<IActionResult> SubmitGrades([FromBody] List<GradeSubmission> submissions)
     {
-        _logger.LogInformation("Received grade submission via Controller for student: {StudentEmail}", submission.StudentEmail);
+        if (submissions == null || !submissions.Any())
+        {
+            return BadRequest(new { message = "No grade submissions provided." });
+        }
 
-        try
+        _logger.LogInformation("Received {Count} grade submissions via Controller.", submissions.Count);
+
+        var results = new List<object>();
+        var allSuccess = true;
+
+        foreach (var submission in submissions)
         {
-            var success = await _processingService.ProcessGradeAsync(submission);
-            
-            if (success)
+            try
             {
-                return Ok(new { message = "Grade processed successfully." });
+                var success = await _processingService.ProcessGradeAsync(submission);
+                results.Add(new { email = submission.StudentEmail, course = submission.CourseName, success = success });
+                if (!success)
+                {
+                    allSuccess = false;
+                }
             }
-            
-            return BadRequest(new { message = "Failed to process grade." });
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing grade for student: {StudentEmail}", submission.StudentEmail);
+                results.Add(new { email = submission.StudentEmail, course = submission.CourseName, success = false, error = ex.Message });
+                allSuccess = false;
+            }
         }
-        catch (Exception ex)
+
+        if (allSuccess)
         {
-            _logger.LogError(ex, "Error in GradeController.");
-            return StatusCode(500, new { message = "An error occurred while processing the grade." });
+            return Ok(new { message = "All grades processed successfully.", details = results });
         }
+
+        return StatusCode(207, new { message = "Some grade submissions failed to process.", details = results });
     }
 }
