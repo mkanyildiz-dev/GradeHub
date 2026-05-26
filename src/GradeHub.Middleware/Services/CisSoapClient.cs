@@ -33,15 +33,13 @@ public class CisSoapClient : ICisSoapClient
             _logger.LogInformation("Sending SOAP request to CIS Mock...");
             var binding = new BasicHttpBinding();
             var endpoint = new EndpointAddress(_endpointUrl);
-            var factory = new ChannelFactory<IGradeService>(binding, endpoint);
-            var client = factory.CreateChannel();
+            var client = new GradeServiceClient(binding, endpoint);
 
-            // StoreGrade is synchronous in the interface, we wrap in Task.Run
-            var result = await Task.Run(() => client.StoreGrade(studentId, courseId, grade));
-            ((IClientChannel)client).Close();
+            var response = await client.StoreGradeAsync(studentId, courseId, grade);
+            client.Close();
             
             _logger.LogInformation("Successfully sent to CIS Mock.");
-            return result;
+            return response.Body.StoreGradeResult;
         });
     }
 }
