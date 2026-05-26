@@ -24,7 +24,7 @@ public class GradeService : IGradeService
 
         try
         {
-            var line = $"{DateTime.UtcNow:O},{studentId},{courseId},{grade}\n";
+            var line = $"{DateTime.Now:O},{studentId},{courseId},{grade}\n";
             File.AppendAllText(_filePath, line);
             _logger.LogInformation("Grade stored successfully.");
             return "SUCCESS";
