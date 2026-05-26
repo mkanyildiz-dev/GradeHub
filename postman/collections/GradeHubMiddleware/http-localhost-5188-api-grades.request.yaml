@@ -4,7 +4,7 @@ url: http://localhost:5188/api/grades
 method: POST
 body:
   type: json
-  content: "{\r
+  content: "[{\r
 
     \  \"studentEmail\": \"muhammedmehdi.kanyildiz@gmail.com\",\r
 
@@ -14,5 +14,5 @@ body:
 
     \  \"professor\": \"Prof. Smith\"\r
 
-    }"
+    }]"
 order: 1778273143360
